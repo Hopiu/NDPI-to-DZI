@@ -24,14 +24,27 @@ def convert_ndpi_to_dzi(
     except pyvips.Error as exc:
         raise click.ClickException(f"Failed to open '{input_ndpi}': {exc}") from exc
 
+    image.set_progress(True)
+
     try:
-        image.dzsave(
-            output,
-            suffix=f".jpeg[Q={quality}]",
-            tile_size=tile_size,
-            overlap=overlap,
-            depth=depth,
-        )
+        with click.progressbar(length=100, label="Converting") as bar:
+            last_percent = [0]
+
+            def eval_cb(_image, progress):
+                delta = progress.percent - last_percent[0]
+                if delta > 0:
+                    bar.update(delta)
+                    last_percent[0] = progress.percent
+
+            image.signal_connect("eval", eval_cb)
+
+            image.dzsave(
+                output,
+                suffix=f".jpeg[Q={quality}]",
+                tile_size=tile_size,
+                overlap=overlap,
+                depth=depth,
+            )
     except pyvips.Error as exc:
         raise click.ClickException(f"Failed to save DZI: {exc}") from exc
 
