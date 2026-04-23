@@ -27,10 +27,20 @@ uv sync
 ## Usage
 
 ```bash
-uv run ndpi2dzi INPUT_NDPI OUTPUT_DZI
+uv run ndpi2dzi INPUT_PATH OUTPUT_PATH
 ```
 
-**Example:**
+`INPUT_PATH` can be:
+
+- a single `.ndpi` file
+- a directory containing `.ndpi` files
+
+`OUTPUT_PATH` is:
+
+- for single-file input: the output DZI base name/path
+- for directory input: the output directory where one DZI is created per NDPI
+
+### Single-file example
 
 ```bash
 uv run ndpi2dzi slide.ndpi slide_output
@@ -45,6 +55,22 @@ slide_output_files/        # Tile directory
   1/0_0.jpeg, 1_0.jpeg...
   ...
   N/...                    # Highest-resolution level
+```
+
+### Directory example (batch conversion)
+
+```bash
+uv run ndpi2dzi ./slides ./dzi_output
+```
+
+If `./slides` contains `A.ndpi` and `B.ndpi`, this creates:
+
+```
+dzi_output/
+  A.dzi
+  A_files/
+  B.dzi
+  B_files/
 ```
 
 ### Options
